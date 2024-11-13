@@ -16,11 +16,12 @@ import PATHS from "@/constants/path";
 import useDebounce from "@/hooks/useDebounce";
 import Loading from "@/components/LoadingPage";
 import { useAuthContext } from "@/context/AuthContext";
+import { MODAL_TYPES } from "@/constants/general";
 
 const CourseDetailsPage = () => {
   const { coursesSlug } = useParams();
 
-  const { profileCourse } = useAuthContext();
+  const { profileCourse, profile, handleStatusModal } = useAuthContext();
 
   const isAlreadyOrder = profileCourse?.find(
     (item) => item?.course.slug === coursesSlug
@@ -60,9 +61,14 @@ const CourseDetailsPage = () => {
       teacherInfor: teams?.find((team) =>
         team?.tags.includes(TEACHER_ROLES.teacher)
       ),
-      orderLink: PATHS.COURSES.ORDER.replace(":courseOrderSlug", coursesSlug),
     };
-  }, [courseDetailsData, coursesSlug]);
+  }, [courseDetailsData]);
+
+  const handleOrderLink = () => {
+    if (!profile?.id) {
+      return handleStatusModal(MODAL_TYPES.login);
+    }
+  };
 
   const relatedCourses = coursesData?.courses?.filter(
     (course) => course.slug !== coursesSlug
@@ -75,12 +81,21 @@ const CourseDetailsPage = () => {
   if (pageLoading) {
     return <Loading />;
   }
+
   return (
     <>
       <CourseHeaderTop {...modifyProps} isAlreadyOrder={!!isAlreadyOrder} />
 
       <main className="mainwrapper coursedetailpage">
-        <CourseDetailsHero {...modifyProps} isAlreadyOrder={!!isAlreadyOrder} />
+        <CourseDetailsHero
+          {...modifyProps}
+          isAlreadyOrder={!!isAlreadyOrder}
+          handleOrderLink={handleOrderLink}
+          orderLink={
+            profile?.id &&
+            PATHS.COURSES.ORDER.replace(":courseOrderSlug", coursesSlug)
+          }
+        />
 
         <CourseDetailsContent {...modifyProps} />
 

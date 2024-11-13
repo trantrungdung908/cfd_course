@@ -8,10 +8,11 @@ const CourseDetailsHero = ({
   duration,
   startDate,
   teacherInfor = {},
-  orderLink,
+  orderLink = "",
   image,
   price,
   isAlreadyOrder,
+  handleOrderLink,
 }) => {
   const { messageApi } = useAuthContext();
 
@@ -43,6 +44,7 @@ const CourseDetailsHero = ({
           </div>
           {/* Chưa đăng ký */}
           <Button
+            onClick={handleOrderLink}
             link={orderLink}
             className={`btn-regcourse ${isAlreadyOrder ? "--disable" : ""}`}
             variant={"primary"}
